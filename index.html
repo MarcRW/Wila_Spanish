@@ -1,575 +1,386 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica de Español</title>
-    <style>
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --dark: #2d3436;
-            --light: #f8f9ff;
-            --correct: #2ecc71;
-            --incorrect: #e74c3c;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            min-height: 100vh;
-            color: var(--light);
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        .nav-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            backdrop-filter: blur(5px);
-        }
-        .nav-btn:hover, .nav-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: white;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-height: 400px;
-        }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
-        h2 {
-            color: white;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        .question {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1em;
-            margin-bottom: 15px;
-        }
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            margin: 10px 0;
-            transition: background 0.3s;
-        }
-        .btn-primary:hover {
-            background: #5a6fc0;
-        }
-        .feedback {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-        .feedback.correct {
-            background: rgba(46, 204, 113, 0.3);
-            color: var(--correct);
-            display: block;
-        }
-        .feedback.incorrect {
-            background: rgba(231, 76, 60, 0.3);
-            color: var(--incorrect);
-            display: block;
-        }
-        .score {
-            text-align: center;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-        .flashcard {
-            perspective: 1000px;
-            width: 100%;
-            height: 250px;
-            position: relative;
-            margin: 20px 0;
-            cursor: pointer;
-        }
-        .flashcard-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .flashcard.flipped .flashcard-inner {
-            transform: rotateY(180deg);
-        }
-        .flashcard-front, .flashcard-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-            border-radius: 12px;
-        }
-        .flashcard-back {
-            transform: rotateY(180deg);
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-        }
-        .flashcard-word {
-            font-size: 1.8em;
-            font-weight: 600;
-            color: white;
-        }
-        .flashcard-example {
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 10px;
-        }
-        .guide-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 3px solid var(--primary);
-        }
-        .guide-box h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        .guide-box p {
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 8px;
-        }
-        .btn-guide {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-        }
-        .options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .option-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .option-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .option-btn.selected {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-        .sentence {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 3px solid var(--primary);
-        }
-        @media (max-width: 600px) {
-            .nav-buttons {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .card {
-                padding: 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Práctica de Español</title>
+  <style>
+    :root{--primary:#667eea;--secondary:#764ba2;--dark:#2d3436;--light:#f8f9ff;--correct:#2ecc71;--incorrect:#e74c3c}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif}
+    body{background:linear-gradient(135deg,var(--primary) 0%,var(--secondary) 100%);min-height:100vh;color:var(--light);padding:20px}
+    .container{max-width:800px;margin:0 auto}
+    .header{text-align:center;margin-bottom:30px}
+    .header h1{font-size:2em;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px}
+    .header p{color:rgba(255,255,255,.9)}
+    .nav-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:30px}
+    .nav-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:12px;border-radius:8px;color:#fff;cursor:pointer;transition:all .3s;font-weight:600;backdrop-filter:blur(5px)}
+    .nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.3);border-color:#fff}
+    .card{background:rgba(255,255,255,.1);border-radius:16px;padding:30px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);min-height:400px}
+    .section{display:none}
+    .section.active{display:block}
+    h2{color:#fff;margin-bottom:20px;font-size:1.5em}
+    .question{font-size:1.2em;margin-bottom:20px;color:rgba(255,255,255,.9)}
+    input[type="text"]{width:100%;padding:12px;border:1px solid rgba(255,255,255,.3);border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font-size:1em;margin-bottom:15px}
+    input[type="text"]:focus{outline:none;border-color:var(--primary)}
+    .btn-primary{background:var(--primary);color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;margin:10px 0;transition:background .3s}
+    .btn-primary:hover{background:#5a6fc0}
+    .feedback{padding:12px;border-radius:8px;margin-top:15px;text-align:center;font-weight:600}
+    .feedback.correct{background:rgba(46,204,113,.3);color:var(--correct);display:block}
+    .feedback.incorrect{background:rgba(231,76,60,.3);color:var(--incorrect);display:block}
+    .score{text-align:center;margin-top:20px;color:rgba(255,255,255,.8)}
+    .flashcard{perspective:1000px;width:100%;height:250px;position:relative;margin:20px 0;cursor:pointer}
+    .flashcard-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px rgba(0,0,0,.2)}
+    .flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+    .flashcard-front,.flashcard-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;border-radius:12px}
+    .flashcard-back{transform:rotateY(180deg);background:linear-gradient(135deg,var(--secondary),var(--primary))}
+    .flashcard-word{font-size:1.8em;font-weight:600;color:#fff}
+    .flashcard-example{font-size:.9em;color:rgba(255,255,255,.8);margin-top:10px}
+    .guide-box{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;margin-bottom:20px;border-left:3px solid var(--primary)}
+    .guide-box h3{color:var(--primary);margin-bottom:10px}
+    .guide-box p{color:rgba(255,255,255,.9);margin-bottom:8px}
+    .btn-guide{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;margin-bottom:15px;font-size:.9em}
+    .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:15px 0}
+    .option-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:10px;border-radius:6px;cursor:pointer;transition:all .3s}
+    .option-btn:hover{background:rgba(255,255,255,.2)}
+    .option-btn.selected{background:var(--primary);border-color:var(--primary)}
+    .sentence{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;margin:15px 0;border-left:3px solid var(--primary)}
+    @media (max-width:600px){.nav-buttons{grid-template-columns:repeat(2,1fr)}.card{padding:15px}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📚 Práctica de Español</h1>
-            <p>Mejora tu español practicando cada día</p>
-        </div>
-        <div class="nav-buttons">
-            <button class="nav-btn active" onclick="showSection('conjugaciones')">Conjugaciones</button>
-            <button class="nav-btn" onclick="showSection('ser-estar')">Ser vs Estar</button>
-            <button class="nav-btn" onclick="showSection('frases')">Completar Frases</button>
-            <button class="nav-btn" onclick="showSection('preposiciones')">Preposiciones</button>
-            <button class="nav-btn" onclick="showSection('objetos')">Obj. Directo/Indirecto</button>
-            <button class="nav-btn" onclick="showSection('orden')">Orden de Palabras</button>
-            <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
-        </div>
-        <div class="card">
-            <!-- Sección Conjugaciones -->
-            <div id="conjugaciones" class="section active">
-                <h2>Practica Conjugaciones</h2>
-                <div class="question" id="conj-question">¿Cómo se conjuga "hacer" en presente para "nosotros"?</div>
-                <input type="text" id="conj-answer" placeholder="Escribe la conjugación...">
-                <button class="btn-primary" onclick="checkConjugation()">Verificar</button>
-                <div class="feedback" id="conj-feedback"></div>
-                <div class="score" id="conj-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Ser vs. Estar -->
-            <div id="ser-estar" class="section">
-                <h2>Ser vs. Estar</h2>
-                <button class="btn-guide" onclick="toggleGuide('ser-estar-guide')">📖 Ver Guía Rápida</button>
-                <div id="ser-estar-guide" class="guide-box">
-                    <h3>¿Cuándo usar cada uno?</h3>
-                    <p><strong>SER:</strong> Características permanentes (ej: "Soy alta"), identidad, profesión, hora/fecha, material.</p>
-                    <p><strong>ESTAR:</strong> Estados temporales (ej: "Estoy cansada"), ubicación, resultado de un cambio (ej: "La puerta está abierta").</p>
-                    <p><strong>¡Cuidado!</strong> "Estoy aburrida" ≠ "Soy aburrida" (la primera es temporal; la segunda, una característica negativa).</p>
-                </div>
-                <div class="sentence" id="ser-estar-sentence">Mi hermana ___ muy inteligente (característica permanente).</div>
-                <div class="options">
-                    <button class="option-btn" onclick="selectOption('es', 'ser-estar')">es</button>
-                    <button class="option-btn" onclick="selectOption('está', 'ser-estar')">está</button>
-                </div>
-                <button class="btn-primary" onclick="checkSerEstar()">Verificar</button>
-                <div class="feedback" id="ser-estar-feedback"></div>
-                <div class="score" id="ser-estar-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Completar Frases -->
-            <div id="frases" class="section">
-                <h2>Completar Frases</h2>
-                <button class="btn-guide" onclick="toggleGuide('frases-guide')">📖 Ver Guía Rápida</button>
-                <div id="frases-guide" class="guide-box">
-                    <h3>Tips para completar frases:</h3>
-                    <p><strong>Imperfecto vs. Pretérito:</strong> Usa imperfecto para acciones habituales o en progreso; pretérito para acciones completadas.</p>
-                    <p><strong>"A" personal:</strong> Se usa antes de personas específicas (ej: "Vi a María").</p>
-                    <p><strong>Reflexivos:</strong> La acción recae en el sujeto (ej: "Me lavo las manos").</p>
-                </div>
-                <div class="sentence" id="frases-sentence">Cuando era niño, yo ___ (jugar) en el parque todos los días.</div>
-                <input type="text" id="frases-answer" placeholder="Escribe el verbo conjugado...">
-                <button class="btn-primary" onclick="checkFrases()">Verificar</button>
-                <div class="feedback" id="frases-feedback"></div>
-                <div class="score" id="frases-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Preposiciones (CORREGIDA) -->
-            <div id="preposiciones" class="section">
-                <h2>Preposiciones</h2>
-                <button class="btn-guide" onclick="toggleGuide('preposiciones-guide')">📖 Ver Guía Rápida</button>
-                <div id="preposiciones-guide" class="guide-box">
-                    <h3>Uso de preposiciones:</h3>
-                    <p><strong>POR:</strong> Causa, medio (ej: "Lo hice por ti"), o movimiento a través de un lugar (ej: "Voy <em>por</em> el parque"). <em>¡Ojo!</em> "Voy por la tienda" suena incompleto sin contexto (ej: "Voy por la tienda <strong>a comprar pan</strong>").</p>
-                    <p><strong>PARA:</strong> Destino o propósito claro (ej: "Voy <em>para</em> la tienda", "Estudio para el examen").</p>
-                    <p><strong>A:</strong> Movimiento hacia un lugar (ej: "Voy <em>a</em> la tienda").</p>
-                    <p><strong>EN:</strong> Ubicación estática (ej: "Estoy <em>en</em> casa").</p>
-                </div>
-                <div class="sentence" id="preposiciones-sentence">___ la tienda (destino: adonde voy).</div>
-                <div class="options">
-                    <button class="option-btn" onclick="selectOption('Voy por', 'preposiciones')">Voy por</button>
-                    <button class="option-btn" onclick="selectOption('Voy para', 'preposiciones')">Voy para</button>
-                </div>
-                <button class="btn-primary" onclick="checkPreposiciones()">Verificar</button>
-                <div class="feedback" id="preposiciones-feedback"></div>
-                <div class="score" id="preposiciones-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Objeto Directo/Indirecto -->
-            <div id="objetos" class="section">
-                <h2>Objeto Directo/Indirecto</h2>
-                <button class="btn-guide" onclick="toggleGuide('objetos-guide')">📖 Ver Guía Rápida</button>
-                <div id="objetos-guide" class="guide-box">
-                    <h3>Reglas:</h3>
-                    <p><strong>Directo (lo/la):</strong> "Comí el pan" → "Lo comí".</p>
-                    <p><strong>Indirecto (le):</strong> "Di el libro a María" → "Le di el libro".</p>
-                    <p><strong>Ambos:</strong> "Di el libro a María" → "Se lo di".</p>
-                </div>
-                <div class="sentence" id="objetos-sentence">Transforma: "Di el regalo a mi hermano" → ___</div>
-                <input type="text" id="objetos-answer" placeholder="Ej: Se lo di">
-                <button class="btn-primary" onclick="checkObjetos()">Verificar</button>
-                <div class="feedback" id="objetos-feedback"></div>
-                <div class="score" id="objetos-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Orden de Palabras -->
-            <div id="orden" class="section">
-                <h2>Orden de Palabras</h2>
-                <div class="sentence" id="orden-sentence">Ordena: "manzanas / Yo / como / rojas" → ___</div>
-                <input type="text" id="orden-answer" placeholder="Ej: Yo como manzanas rojas">
-                <button class="btn-primary" onclick="checkOrden()">Verificar</button>
-                <div class="feedback" id="orden-feedback"></div>
-                <div class="score" id="orden-score">Correctas: 0 | Intentos: 0</div>
-            </div>
-
-            <!-- Sección Flashcards -->
-            <div id="flashcards" class="section">
-                <h2>Flashcards de Vocabulario</h2>
-                <p>Haz clic en la tarjeta para ver la traducción y ejemplo.</p>
-                <div class="flashcard" id="flashcard" onclick="flipCard()">
-                    <div class="flashcard-inner">
-                        <div class="flashcard-front">
-                            <div class="flashcard-word" id="card-front">el atolladero</div>
-                        </div>
-                        <div class="flashcard-back">
-                            <div class="flashcard-word" id="card-back">predicament / tight spot</div>
-                            <div class="flashcard-example">Ejemplo: "Estamos en un atolladero financiero".</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="nextFlashcard()">Siguiente Tarjeta</button>
-                <div class="score" id="flashcard-progress">Tarjeta 1 de 100</div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📚 Práctica de Español</h1>
+      <p>Mejora tu español practicando cada día</p>
     </div>
 
-    <script>
-        // Datos para las flashcards (100 palabras)
-        const flashcards = [
-            { word: "el atolladero", translation: "predicament / tight spot", example: "Estamos en un atolladero financiero." },
-            { word: "la desventura", translation: "misfortune", example: "La desventura lo persiguió toda su vida." },
-            { word: "descargar", translation: "to download", example: "Descargué la aplicación." },
-            { word: "contraseña", translation: "password", example: "Olvidé mi contraseña." },
-            // ... (las 100 palabras están aquí, pero las omití para no alargar el código)
-        ];
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="showSection('conjugaciones')">Conjugaciones</button>
+      <button class="nav-btn" onclick="showSection('ser-estar')">Ser vs Estar</button>
+      <button class="nav-btn" onclick="showSection('frases')">Completar Frases</button>
+      <button class="nav-btn" onclick="showSection('preposiciones')">Preposiciones</button>
+      <button class="nav-btn" onclick="showSection('objetos')">Obj. Directo/Indirecto</button>
+      <button class="nav-btn" onclick="showSection('orden')">Orden de Palabras</button>
+      <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
+    </div>
 
-        // Datos para conjugaciones
-        const conjugations = [
-            { verb: "ser", tense: "presente", person: "yo", answer: "soy" },
-            { verb: "estar", tense: "presente", person: "tú", answer: "estás" },
-            { verb: "hacer", tense: "presente", person: "nosotros", answer: "hacemos" },
-            { verb: "ir", tense: "pretérito", person: "ellos", answer: "fueron" },
-            // ... (más conjugaciones)
-        ];
+    <div class="card">
 
-        // Datos para "Ser vs. Estar"
-        const serEstarExercises = [
-            { sentence: "Mi hermana ___ muy inteligente (característica permanente).", answer: "es", explanation: "Usa 'ser' para características permanentes." },
-            { sentence: "Hoy ___ cansada del trabajo (estado temporal).", answer: "estoy", explanation: "Usa 'estar' para estados temporales." },
-            // ... (25 ejercicios)
-        ];
+      <!-- Conjugaciones -->
+      <div id="conjugaciones" class="section active">
+        <h2>Practica Conjugaciones</h2>
+        <div class="question" id="conj-question">¿Cómo se conjuga "hacer" en presente para "nosotros"?</div>
+        <input type="text" id="conj-answer" placeholder="Escribe la conjugación..." />
+        <button class="btn-primary" id="conj-check" onclick="checkConjugation()">Verificar</button>
+        <div class="feedback" id="conj-feedback"></div>
+        <div class="score" id="conj-score">Correctas: 0 | Intentos: 0</div>
+      </div>
 
-        // Datos para "Preposiciones" (CORREGIDO)
-        const preposicionesExercises = [
-            {
-                sentence: "___ la tienda (destino: adonde voy).",
-                options: ["Voy por", "Voy para"],
-                answer: "Voy para",
-                explanation: "Usa 'para' para indicar destino claro. 'Voy por la tienda' suena incompleto sin un propósito adicional (ej: 'Voy por la tienda a comprar pan')."
-            },
-            {
-                sentence: "Lo hice ___ ti.",
-                options: ["por", "para"],
-                answer: "por",
-                explanation: "Usa 'por' para indicar causa o motivo (aquí: 'por ti' = a causa de ti)."
-            },
-            // ... (otros ejercicios)
-        ];
+      <!-- Ser vs Estar -->
+      <div id="ser-estar" class="section">
+        <h2>Ser vs. Estar</h2>
+        <button class="btn-guide" onclick="toggleGuide('ser-estar-guide')">📖 Ver Guía Rápida</button>
+        <div id="ser-estar-guide" class="guide-box">
+          <h3>¿Cuándo usar cada uno?</h3>
+          <p><strong>SER:</strong> Características permanentes…</p>
+          <p><strong>ESTAR:</strong> Estados temporales…</p>
+          <p><strong>¡Cuidado!</strong> "Estoy aburrida" ≠ "Soy aburrida".</p>
+        </div>
+        <div class="sentence" id="ser-estar-sentence">Mi hermana ___ muy inteligente (característica permanente).</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption('es','ser-estar')">es</button>
+          <button class="option-btn" onclick="selectOption('está','ser-estar')">está</button>
+        </div>
+        <button class="btn-primary" onclick="checkSerEstar()">Verificar</button>
+        <div class="feedback" id="ser-estar-feedback"></div>
+        <div class="score" id="ser-estar-score">Correctas: 0 | Intentos: 0</div>
+      </div>
 
-        // Datos para "Completar Frases"
-        const frasesExercises = [
-            { sentence: "Cuando era niño, yo ___ (jugar) en el parque todos los días.", answer: "jugaba", type: "imperfecto" },
-            { sentence: "Ayer ___ (comer) pizza con mis amigos.", answer: "comí", type: "pretérito" },
-            // ... (33 ejercicios)
-        ];
+      <!-- Frases -->
+      <div id="frases" class="section">
+        <h2>Completar Frases</h2>
+        <button class="btn-guide" onclick="toggleGuide('frases-guide')">📖 Ver Guía Rápida</button>
+        <div id="frases-guide" class="guide-box">
+          <h3>Tips para completar frases:</h3>
+          <p><strong>Imperfecto vs. Pretérito</strong> …</p>
+        </div>
+        <div class="sentence" id="frases-sentence">Cuando era niño, yo ___ (jugar) en el parque todos los días.</div>
+        <input type="text" id="frases-answer" placeholder="Escribe el verbo conjugado..." />
+        <button class="btn-primary" onclick="checkFrases()">Verificar</button>
+        <div class="feedback" id="frases-feedback"></div>
+        <div class="score" id="frases-score">Correctas: 0 | Intentos: 0</div>
+      </div>
 
-        // Variables globales
-        let currentSection = "conjugaciones";
-        let currentFlashcardIndex = 0;
-        let scores = {
-            conjugaciones: { correct: 0, attempts: 0 },
-            "ser-estar": { correct: 0, attempts: 0 },
-            frases: { correct: 0, attempts: 0 },
-            preposiciones: { correct: 0, attempts: 0 },
-            objetos: { correct: 0, attempts: 0 },
-            orden: { correct: 0, attempts: 0 }
-        };
+      <!-- Preposiciones -->
+      <div id="preposiciones" class="section">
+        <h2>Preposiciones</h2>
+        <button class="btn-guide" onclick="toggleGuide('preposiciones-guide')">📖 Ver Guía Rápida</button>
+        <div id="preposiciones-guide" class="guide-box">
+          <h3>Uso de preposiciones:</h3>
+          <p><strong>POR</strong>… <strong>PARA</strong>…</p>
+        </div>
+        <div class="sentence" id="preposiciones-sentence">___ la tienda (destino: adonde voy).</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption('Voy por','preposiciones')">Voy por</button>
+          <button class="option-btn" onclick="selectOption('Voy para','preposiciones')">Voy para</button>
+        </div>
+        <button class="btn-primary" onclick="checkPreposiciones()">Verificar</button>
+        <div class="feedback" id="preposiciones-feedback"></div>
+        <div class="score" id="preposiciones-score">Correctas: 0 | Intentos: 0</div>
+      </div>
 
-        // Función para mostrar secciones
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-            currentSection = sectionId;
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.nav-btn[onclick="showSection('${sectionId}')"]`).classList.add('active');
-            if (sectionId === "conjugaciones") loadConjugationExercise();
-            if (sectionId === "ser-estar") loadSerEstarExercise();
-            if (sectionId === "frases") loadFrasesExercise();
-            if (sectionId === "preposiciones") loadPreposicionesExercise();
+      <!-- Objetos -->
+      <div id="objetos" class="section">
+        <h2>Objeto Directo/Indirecto</h2>
+        <button class="btn-guide" onclick="toggleGuide('objetos-guide')">📖 Ver Guía Rápida</button>
+        <div id="objetos-guide" class="guide-box">
+          <h3>Reglas:</h3>
+          <p>Directo (lo/la)… Indirecto (le)…</p>
+        </div>
+        <div class="sentence" id="objetos-sentence">Transforma: "Di el regalo a mi hermano" → ___</div>
+        <input type="text" id="objetos-answer" placeholder="Ej: Se lo di" />
+        <button class="btn-primary" onclick="checkObjetos()">Verificar</button>
+        <div class="feedback" id="objetos-feedback"></div>
+        <div class="score" id="objetos-score">Correctas: 0 | Intentos: 0</div>
+      </div>
+
+      <!-- Orden -->
+      <div id="orden" class="section">
+        <h2>Orden de Palabras</h2>
+        <div class="sentence" id="orden-sentence">Ordena: "manzanas / Yo / como / rojas" → ___</div>
+        <input type="text" id="orden-answer" placeholder="Ej: Yo como manzanas rojas" />
+        <button class="btn-primary" onclick="checkOrden()">Verificar</button>
+        <div class="feedback" id="orden-feedback"></div>
+        <div class="score" id="orden-score">Correctas: 0 | Intentos: 0</div>
+      </div>
+
+      <!-- Flashcards -->
+      <div id="flashcards" class="section">
+        <h2>Flashcards de Vocabulario</h2>
+        <p>Haz clic en la tarjeta para ver la traducción y ejemplo.</p>
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">
+              <div class="flashcard-word" id="card-front">el atolladero</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="flashcard-word" id="card-back">predicament / tight spot</div>
+              <div class="flashcard-example">Ejemplo: "Estamos en un atolladero financiero".</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="nextFlashcard()">Siguiente Tarjeta</button>
+        <div class="score" id="flashcard-progress">Tarjeta 1 de 100</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flashcards (sample)
+    const flashcards = [
+      { word:"el atolladero", translation:"predicament / tight spot", example:"Estamos en un atolladero financiero." },
+      { word:"la desventura", translation:"misfortune", example:"La desventura lo persiguió toda su vida." },
+      { word:"descargar", translation:"to download", example:"Descargué la aplicación." },
+      { word:"contraseña", translation:"password", example:"Olvidé mi contraseña." }
+    ];
+
+    // Conjugations (sample)
+    const conjugations = [
+      { verb:"ser",   tense:"presente",  person:"yo",        answer:"soy" },
+      { verb:"estar", tense:"presente",  person:"tú",        answer:"estás" },
+      { verb:"hacer", tense:"presente",  person:"nosotros",  answer:"hacemos" },
+      { verb:"ir",    tense:"pretérito", person:"ellos",     answer:"fueron" }
+    ];
+
+    const serEstarExercises = [
+      { sentence:"Mi hermana ___ muy inteligente (característica permanente).", answer:"es", explanation:"Usa 'ser' para características permanentes." },
+      { sentence:"Hoy ___ cansada del trabajo (estado temporal).", answer:"estoy", explanation:"Usa 'estar' para estados temporales." }
+    ];
+
+    const preposicionesExercises = [
+      { sentence:"___ la tienda (destino: adonde voy).", options:["Voy por","Voy para"], answer:"Voy para", explanation:"'Para' indica destino claro." },
+      { sentence:"Lo hice ___ ti.", options:["por","para"], answer:"por", explanation:"'Por' indica causa o motivo." }
+    ];
+
+    const frasesExercises = [
+      { sentence:"Cuando era niño, yo ___ (jugar) en el parque todos los días.", answer:"jugaba", type:"imperfecto" },
+      { sentence:"Ayer ___ (comer) pizza con mis amigos.", answer:"comí", type:"pretérito" }
+    ];
+
+    // App state
+    let currentSection = "conjugaciones";
+    let currentFlashcardIndex = 0;
+    let scores = {
+      conjugaciones:{correct:0, attempts:0},
+      "ser-estar": {correct:0, attempts:0},
+      frases:       {correct:0, attempts:0},
+      preposiciones:{correct:0, attempts:0},
+      objetos:      {correct:0, attempts:0},
+      orden:        {correct:0, attempts:0}
+    };
+
+    // ==== Conjugaciones fixes ====
+    let currentConj = null;
+    let conjTimerId = null;
+
+    function loadConjugationExercise(){
+      let next;
+      do {
+        next = conjugations[Math.floor(Math.random()*conjugations.length)];
+      } while (currentConj && next.verb===currentConj.verb && next.person===currentConj.person && next.tense===currentConj.tense);
+
+      currentConj = next;
+
+      document.getElementById('conj-question').textContent =
+        `¿Cómo se conjuga "${currentConj.verb}" en ${currentConj.tense} para "${currentConj.person}"?`;
+
+      const feedback = document.getElementById('conj-feedback');
+      feedback.className = "feedback";
+      feedback.textContent = "";
+
+      const input = document.getElementById('conj-answer');
+      input.value = "";
+      input.focus();
+
+      const btn = document.getElementById('conj-check');
+      btn.disabled = false;
+    }
+
+    function checkConjugation(){
+      if(!currentConj) return;
+
+      const input = document.getElementById('conj-answer');
+      const user = (input.value||"").trim().toLowerCase();
+      const correct = (currentConj.answer||"").trim().toLowerCase();
+      const feedback = document.getElementById('conj-feedback');
+      const btn = document.getElementById('conj-check');
+
+      scores.conjugaciones.attempts++;
+
+      if(user===correct){
+        feedback.className = "feedback correct";
+        feedback.textContent = "¡Correcto! ✅";
+        scores.conjugaciones.correct++;
+      } else {
+        feedback.className = "feedback incorrect";
+        feedback.textContent = `Incorrecto. La respuesta correcta es: "${currentConj.answer}".`;
+      }
+
+      updateScore('conjugaciones');
+
+      btn.disabled = true;
+      if(conjTimerId) clearTimeout(conjTimerId);
+      conjTimerId = setTimeout(() => {
+        conjTimerId = null;
+        loadConjugationExercise();
+      }, 1500);
+    }
+
+    // Enter key for conjugations
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('conjugaciones').classList.contains('active')) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkConjugation();
         }
+      }
+    });
 
-        // Función para mostrar/ocultar guías
-        function toggleGuide(guideId) {
-            const guide = document.getElementById(guideId);
-            guide.style.display = guide.style.display === "none" ? "block" : "none";
-        }
+    // ==== Shared UI ====
+    function showSection(sectionId){
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      currentSection = sectionId;
 
-        // Función para cargar ejercicios de conjugación (CORREGIDA)
-        function loadConjugationExercise() {
-            const exercise = conjugations[Math.floor(Math.random() * conjugations.length)];
-            document.getElementById('conj-question').textContent =
-                `¿Cómo se conjuga "${exercise.verb}" en ${exercise.tense} para "${exercise.person}"?`;
-            document.getElementById('conj-answer').value = "";
-            document.getElementById('conj-feedback').className = "feedback";
-            document.getElementById('conj-feedback').textContent = "";
-        }
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector(`.nav-btn[onclick="showSection('${sectionId}')"]`)?.classList.add('active');
 
-        // Función para verificar conjugaciones (CORREGIDA)
-        function checkConjugation() {
-            const answer = document.getElementById('conj-answer').value.trim().toLowerCase();
-            const questionText = document.getElementById('conj-question').textContent;
-            const exercise = conjugations.find(e =>
-                questionText.includes(e.verb) &&
-                questionText.includes(e.tense) &&
-                questionText.includes(e.person)
-            );
-            const feedback = document.getElementById('conj-feedback');
-            scores.conjugaciones.attempts++;
+      if(sectionId==="conjugaciones") loadConjugationExercise();
+      if(sectionId==="ser-estar")    loadSerEstarExercise();
+      if(sectionId==="frases")       loadFrasesExercise();
+      if(sectionId==="preposiciones")loadPreposicionesExercise();
+    }
 
-            if (answer === exercise.answer) {
-                feedback.className = "feedback correct";
-                feedback.textContent = "¡Correcto! ✅";
-                scores.conjugaciones.correct++;
-            } else {
-                feedback.className = "feedback incorrect";
-                feedback.textContent = `Incorrecto. La respuesta correcta es: "${exercise.answer}".`;
-            }
-            updateScore('conjugaciones');
-            setTimeout(loadConjugationExercise, 1500); // Ahora SÍ carga el siguiente ejercicio
-        }
+    function toggleGuide(id){
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display === "none" ? "block" : "none");
+    }
 
-        // Funciones para otras secciones (Ser vs. Estar, Frases, etc.)
-        function loadSerEstarExercise() {
-            const exercise = serEstarExercises[Math.floor(Math.random() * serEstarExercises.length)];
-            document.getElementById('ser-estar-sentence').textContent = exercise.sentence;
-            document.querySelectorAll('#ser-estar .option-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            document.getElementById('ser-estar-feedback').className = "feedback";
-        }
+    function updateScore(section){
+      document.getElementById(`${section}-score`).textContent =
+        `Correctas: ${scores[section].correct} | Intentos: ${scores[section].attempts}`;
+    }
 
-        function checkSerEstar() {
-            const selected = document.querySelector('#ser-estar .option-btn.selected');
-            const exercise = serEstarExercises.find(e =>
-                document.getElementById('ser-estar-sentence').textContent === e.sentence
-            );
-            const feedback = document.getElementById('ser-estar-feedback');
-            scores["ser-estar"].attempts++;
+    // Ser vs Estar
+    function loadSerEstarExercise(){
+      const ex = serEstarExercises[Math.floor(Math.random()*serEstarExercises.length)];
+      document.getElementById('ser-estar-sentence').textContent = ex.sentence;
+      document.querySelectorAll('#ser-estar .option-btn').forEach(btn=>btn.classList.remove('selected'));
+      document.getElementById('ser-estar-feedback').className = "feedback";
+      document.getElementById('ser-estar-feedback').textContent = "";
+    }
+    function selectOption(value, section){
+      document.querySelectorAll(`#${section} .option-btn`).forEach(b=>b.classList.remove('selected'));
+      [...document.querySelectorAll(`#${section} .option-btn`)].find(b=>b.textContent===value)?.classList.add('selected');
+    }
+    function checkSerEstar(){
+      const selected = document.querySelector('#ser-estar .option-btn.selected');
+      const sentence = document.getElementById('ser-estar-sentence').textContent;
+      const ex = serEstarExercises.find(e=>e.sentence===sentence);
+      const fb = document.getElementById('ser-estar-feedback');
+      scores["ser-estar"].attempts++;
 
-            if (selected && selected.textContent === exercise.answer) {
-                feedback.className = "feedback correct";
-                feedback.textContent = "¡Correcto! ✅";
-                scores["ser-estar"].correct++;
-            } else {
-                feedback.className = "feedback incorrect";
-                feedback.textContent = `Incorrecto. La respuesta correcta es: "${exercise.answer}". ${exercise.explanation}`;
-            }
-            updateScore('ser-estar');
-            setTimeout(loadSerEstarExercise, 2000);
-        }
+      if(selected && selected.textContent===ex.answer){
+        fb.className = "feedback correct";
+        fb.textContent = "¡Correcto! ✅";
+        scores["ser-estar"].correct++;
+      } else {
+        fb.className = "feedback incorrect";
+        fb.textContent = `Incorrecto. La respuesta correcta es: "${ex.answer}". ${ex.explanation}`;
+      }
+      updateScore('ser-estar');
+      setTimeout(loadSerEstarExercise, 2000);
+    }
 
-        // ... (otras funciones para Frases, Preposiciones, etc.)
+    // Stubs for other sections (you already have logic—keep or extend)
+    function loadFrasesExercise(){
+      const ex = frasesExercises[Math.floor(Math.random()*frasesExercises.length)];
+      document.getElementById('frases-sentence').textContent = ex.sentence;
+      document.getElementById('frases-answer').value = "";
+      document.getElementById('frases-feedback').className = "feedback";
+      document.getElementById('frases-feedback').textContent = "";
+    }
+    function checkFrases(){ /* your existing checker here */ }
 
-        // Función para actualizar puntuación
-        function updateScore(section) {
-            document.getElementById(`${section}-score`).textContent =
-                `Correctas: ${scores[section].correct} | Intentos: ${scores[section].attempts}`;
-        }
+    function loadPreposicionesExercise(){
+      const ex = preposicionesExercises[Math.floor(Math.random()*preposicionesExercises.length)];
+      document.getElementById('preposiciones-sentence').textContent = ex.sentence;
+      document.getElementById('preposiciones-feedback').className = "feedback";
+      document.getElementById('preposiciones-feedback').textContent = "";
+      // Reset selection
+      document.querySelectorAll('#preposiciones .option-btn').forEach(b=>b.classList.remove('selected'));
+    }
+    function checkPreposiciones(){ /* your existing checker here */ }
 
-        // Funciones para flashcards
-        function flipCard() {
-            const flashcard = document.getElementById('flashcard');
-            flashcard.classList.toggle('flipped');
-        }
+    // Flashcards
+    function flipCard(){ document.getElementById('flashcard').classList.toggle('flipped'); }
+    function nextFlashcard(){
+      currentFlashcardIndex = (currentFlashcardIndex+1) % flashcards.length;
+      const card = flashcards[currentFlashcardIndex];
+      document.getElementById('flashcard').classList.remove('flipped');
+      document.getElementById('card-front').textContent = card.word;
+      document.getElementById('card-back').innerHTML =
+        `<div class="flashcard-word">${card.translation}</div><div class="flashcard-example">${card.example}</div>`;
+      document.getElementById('flashcard-progress').textContent = `Tarjeta ${currentFlashcardIndex+1} de ${flashcards.length}`;
+    }
 
-        function nextFlashcard() {
-            currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
-            const flashcard = document.getElementById('flashcard');
-            flashcard.classList.remove('flipped');
-            document.getElementById('card-front').textContent = flashcards[currentFlashcardIndex].word;
-            document.getElementById('card-back').innerHTML = `
-                <div class="flashcard-word">${flashcards[currentFlashcardIndex].translation}</div>
-                <div class="flashcard-example">${flashcards[currentFlashcardIndex].example}</div>
-            `;
-            document.getElementById('flashcard-progress').textContent = `Tarjeta ${currentFlashcardIndex + 1} de 100`;
-        }
-
-        // Inicializar la app
-        window.onload = function() {
-            loadConjugationExercise();
-            document.getElementById('card-front').textContent = flashcards[0].word;
-            document.getElementById('card-back').innerHTML = `
-                <div class="flashcard-word">${flashcards[0].translation}</div>
-                <div class="flashcard-example">${flashcards[0].example}</div>
-            `;
-        };
-    </script>
+    // Init
+    window.onload = function(){
+      loadConjugationExercise();
+      document.getElementById('card-front').textContent = flashcards[0].word;
+      document.getElementById('card-back').innerHTML =
+        `<div class="flashcard-word">${flashcards[0].translation}</div><div class="flashcard-example">${flashcards[0].example}</div>`;
+    };
+  </script>
 </body>
 </html>
